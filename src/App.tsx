@@ -6,6 +6,8 @@ import { NewNote } from "./NewNote";
 import { NoteList } from "./NoteList";
 import { useLocalStorage } from "./useLocalStorage";
 import { v4 as uuidV4 } from "uuid";
+import { NoteLayout } from "./NoteLayout";
+import { Note } from "./Note";
 
 // Note types which can be used in other files: export
 export type Note = {
@@ -54,12 +56,6 @@ function App() {
         { ...data, id: uuidV4(), tagIds: tags.map((tag) => tag.id) },
       ];
     });
-    // setNotes((prevNotes) => {
-    //   return [
-    //     ...prevNotes,
-    //     { ...data, id: uuidV4(), tagIds: tags.map((tag) => tag.id) },
-    //   ];
-    // });
   }
 
   function addTag(tag: Tag) {
@@ -83,8 +79,8 @@ function App() {
             />
           }
         />
-        <Route path="/:id">
-          <Route index element={<h1>Show</h1>} />
+        <Route path="/:id" element={<NoteLayout notes={notesWithTags} />}>
+          <Route index element={<Note />} />
           <Route path="edit" element={<h1>Edit</h1>} />
         </Route>
         <Route path="/new" element={<h1>New</h1>} />
