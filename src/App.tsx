@@ -58,10 +58,6 @@ function App() {
     });
   }
 
-  function addTag(tag: Tag) {
-    setTags((prev) => [...prev, tag]);
-  }
-
   function onEditNote(id: string, { tags, ...data }: NoteData) {
     setNotes((prevNotes) => {
       return prevNotes.map((note) => {
@@ -80,12 +76,40 @@ function App() {
     });
   }
 
+  function addTag(tag: Tag) {
+    setTags((prev) => [...prev, tag]);
+  }
+
+  function editTag(id: string, label: string) {
+    setTags((prevTags) => {
+      return prevTags.map((tag) => {
+        if (tag.id === id) {
+          return { ...tag, label };
+        }
+        return tag;
+      });
+    });
+  }
+
+  function deleteTag(id: string) {
+    setTags((prevTags) => {
+      return prevTags.filter((tag) => tag.id !== id);
+    });
+  }
+
   return (
     <Container className="my-4">
       <Routes>
         <Route
           path="/"
-          element={<NoteList notes={notesWithTags} availableTags={tags} />}
+          element={
+            <NoteList
+              notes={notesWithTags}
+              availableTags={tags}
+              onEditTag={editTag}
+              onDeleteTag={deleteTag}
+            />
+          }
         />
         <Route
           path="/new"
