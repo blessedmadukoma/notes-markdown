@@ -3,12 +3,15 @@ import { Col, Form, Row, Stack, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import CreatableReactSelect from "react-select/creatable";
 import { NoteData, Tag } from "./App";
+import { v4 as uuidV4 } from "uuid";
 
 type NoteFormProps = {
   onSubmit: (data: NoteData) => void; // void -> we are not expecting a return value
+  onAddTag: (tag: Tag) => void;
+  availableTags: Tag[];
 };
 
-export function NoteForm({ onSubmit }: NoteFormProps) {
+export function NoteForm({ onSubmit, onAddTag, availableTags }: NoteFormProps) {
   const title = useRef<HTMLInputElement>(null);
   const markdown = useRef<HTMLTextAreaElement>(null);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
@@ -24,7 +27,7 @@ export function NoteForm({ onSubmit }: NoteFormProps) {
   }
 
   return (
-    <Form>
+    <Form onSubmit={handleSubmit}>
       <Stack gap={4}>
         <Row>
           <Col>
@@ -37,6 +40,14 @@ export function NoteForm({ onSubmit }: NoteFormProps) {
             <Form.Group controlId="tags">
               <Form.Label>Tags</Form.Label>
               <CreatableReactSelect
+                onCreateOption={(label) => {
+                  const newTag = { id: uuidV4(), label };
+                  onAddTag(newTag);
+                  // setSelectedTags(prev => [...prev, newTag]);
+                }}
+                options={availableTags.map((tag) => {
+                  return { label: tag.label, value: tag.id };
+                })}
                 value={selectedTags.map((tag) => {
                   return { label: tag.label, value: tag.id };
                 })}
