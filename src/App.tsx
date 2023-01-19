@@ -8,6 +8,7 @@ import { useLocalStorage } from "./useLocalStorage";
 import { v4 as uuidV4 } from "uuid";
 import { NoteLayout } from "./NoteLayout";
 import { Note } from "./Note";
+import { EditNote } from "./EditNote";
 
 // Note types which can be used in other files: export
 export type Note = {
@@ -49,7 +50,6 @@ function App() {
   }, [notes, tags]);
 
   function onCreateNote({ tags, ...data }: NoteData) {
-    console.log(tags, data);
     setNotes((prevNotes) => {
       return [
         ...prevNotes,
@@ -60,6 +60,18 @@ function App() {
 
   function addTag(tag: Tag) {
     setTags((prev) => [...prev, tag]);
+  }
+
+  function onEditNote(id: string, { tags, ...data }: NoteData) {
+    setNotes((prevNotes) => {
+      return prevNotes.map((note) => {
+        if (note.id === id) {
+          // overwrite the note
+          return { ...note, ...data, tagIds: tags.map((tag) => tag.id) };
+        }
+        return note;
+      });
+    });
   }
 
   return (
@@ -81,7 +93,16 @@ function App() {
         />
         <Route path="/:id" element={<NoteLayout notes={notesWithTags} />}>
           <Route index element={<Note />} />
-          <Route path="edit" element={<h1>Edit</h1>} />
+          <Route
+            path="edit"
+            element={
+              <EditNote
+                onSubmit={onEditNote}
+                onAddTag={addTag}
+                availableTags={tags}
+              />
+            }
+          />
         </Route>
         <Route path="/new" element={<h1>New</h1>} />
         <Route path="*" element={<Navigate to="/" />} />
